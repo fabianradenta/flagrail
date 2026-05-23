@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships ProjectMember[]
+  auditLogs   AuditLog[]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  key         String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members      ProjectMember[]
+  environments Environment[]
+  flags        FeatureFlag[]
+  apiKeys      ApiKey[]
+  auditLogs    AuditLog[]
+}
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  role      String   @default("member") // "owner" | "member"
+  userId    String
+  projectId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+}
+
+model Environment {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String
+  projectId String
+  createdAt DateTime @default(now())
+
+  project Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  flags   FlagEnvironment[]
+
+  @@unique([projectId, slug])
+}
+
+model FeatureFlag {
+  id          String   @id @default(cuid())
+  name        String
+  key         String
+  description String?
+  projectId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project      Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  environments FlagEnvironment[]
+
+  @@unique([projectId, key])
+}
+
+// Per-environment state for a flag (enabled, rollout %, targeting rules)
+model FlagEnvironment {
+  id                String   @id @default(cuid())
+  enabled           Boolean  @default(false)
+  rolloutPercentage Int      @default(100)
+  flagId            String
+  environmentId     String
+  updatedAt         DateTime @updatedAt
+
+  flag        FeatureFlag    @relation(fields: [flagId], references: [id], onDelete: Cascade)
+  environment Environment    @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  rules       TargetingRule[]
+
+  @@unique([flagId, environmentId])
+}
+
+model TargetingRule {
+  id                String   @id @default(cuid())
+  attribute         String   // e.g. "role", "email"
+  operator          String   // e.g. "equals", "contains"
+  value             String
+  flagEnvironmentId String
+  createdAt         DateTime @default(now())
+
+  flagEnvironment FlagEnvironment @relation(fields: [flagEnvironmentId], references: [id], onDelete: Cascade)
+}
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  name       String
+  keyHash    String    @unique // SHA-256 of the raw key; raw key is never stored
+  keyPrefix  String    // first 12 chars of raw key for display, e.g. "fr_live_xxxx"
+  projectId  String
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String   // e.g. "flag.created", "flag.toggled", "project.created"
+  entityType String   // "flag" | "project" | "environment" | "api_key"
+  entityId   String
+  payload    Json?    // snapshot of what changed
+  userId     String?
+  projectId  String
+  createdAt  DateTime @default(now())
+
+  user    User?   @relation(fields: [userId], references: [id])
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}

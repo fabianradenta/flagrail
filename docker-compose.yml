@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: flagrail_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: flagrail
+      POSTGRES_PASSWORD: flagrail_dev
+      POSTGRES_DB: flagrail
+    ports:
+      - "5433:5432"
+    volumes:
+      - flagrail_pgdata:/var/lib/postgresql/data
+
+volumes:
+  flagrail_pgdata:

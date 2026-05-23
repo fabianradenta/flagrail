@@ -1,0 +1,36 @@
+<svg
+  viewBox="0 0 48 48"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <rect width="48" height="48" rx="14" fill="#4C25FC" />
+
+  <!-- rail -->
+  <path d="M0 31H48" stroke="white" stroke-width="2" />
+
+  <!-- flag pole -->
+  <rect x="18" y="11" width="2" height="20" rx="0.6" fill="white" />
+
+  <!-- rail nodes -->
+  <circle cx="10" cy="31" r="3" fill="white" />
+  <circle cx="38" cy="31" r="3" fill="white" />
+
+  <!-- central hub -->
+  <circle cx="24" cy="31" r="4.5" fill="white" />
+  <circle cx="24" cy="31" r="3" fill="#4C25FC" />
+  <circle cx="24" cy="31" r="1.5" fill="white" />
+
+  <!-- flag body top -->
+  <path
+    d="M20 13H31.4Q32.6 13 31.9 14L28 18H20Z"
+    fill="white"
+  />
+
+  <!-- flag body bottom -->
+  <path
+    d="M20 18H28L31.9 22Q32.6 23 31.4 23H20Z"
+    fill="#EDE7FC"
+  />
+
+  <!-- flag fold -->
+  <path d="M20 13L23.5 18L20 23V13Z" fill="#D4C8FB" />
+</svg>
