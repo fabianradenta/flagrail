@@ -37,7 +37,7 @@ export default function LoginPage() {
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-md">
-      <h2 className="mb-6 text-base font-semibold text-slate-950">
+      <h2 className="mb-4 text-base font-semibold text-slate-950">
         Sign in to your account
       </h2>
 

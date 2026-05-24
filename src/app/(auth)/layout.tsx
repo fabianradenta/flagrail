@@ -8,8 +8,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       <div className="relative mb-8 flex flex-col items-center text-center">
         <Logo variant="iconOnly" size="lg" className="mb-3" />
-        <h1 className="text-base font-semibold text-slate-950">Flagrail</h1>
-        <p className="mt-1.5 text-xs leading-relaxed text-slate-600 max-w-xs">
+        <h1 className="text-3xl font-bold text-slate-900">Flagrail</h1>
+        <p className="mt-1.5 text-sm leading-relaxed text-slate-600 max-w-xs">
           Control feature releases with flags, rollout rules, and audit logs.
         </p>
       </div>

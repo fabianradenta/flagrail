@@ -71,7 +71,7 @@ export default async function DashboardPage() {
           </Link>
         </div>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 items-stretch auto-rows-fr">
           {projects.map((project) => {
             const initial = project.name[0]?.toUpperCase() ?? "P";
             const flagCount = project._count.flags;
@@ -81,10 +81,10 @@ export default async function DashboardPage() {
             const apiKeyCount = project._count.apiKeys;
             const lastActivity = project.auditLogs[0]?.createdAt ?? null;
             return (
-              <li key={project.id}>
+              <li key={project.id} className="h-full">
                 <Link
                   href={`/projects/${project.id}`}
-                  className="group flex flex-col bg-white rounded-2xl border border-l-4 border-slate-200 border-l-indigo-500 p-5 shadow-sm hover:shadow-md hover:shadow-indigo-100/80 hover:border-indigo-200 transition-all"
+                  className="group h-full flex flex-col bg-white rounded-2xl border border-l-4 border-slate-200 border-l-indigo-500 p-5 shadow-sm hover:shadow-md hover:shadow-indigo-100/80 hover:border-indigo-200 transition-all"
                 >
                   {/* Card header: avatar + name + flag count */}
                   <div className="flex items-start gap-3 mb-3">
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
                   </div>
 
                   {project.description && (
-                    <p className="mb-3 text-sm leading-relaxed text-slate-600 line-clamp-2">
+                    <p className="mb-3 flex-1 text-sm leading-relaxed text-slate-600 line-clamp-2">
                       {project.description}
                     </p>
                   )}
