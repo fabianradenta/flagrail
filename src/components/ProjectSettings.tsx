@@ -30,7 +30,7 @@ export function ProjectSettings({ projectId, projectName, projectKey }: Props) {
         setError(data.error ?? "Delete failed");
         return;
       }
-      router.push("/projects");
+      router.push("/dashboard");
       router.refresh();
     } catch {
       setError("Network error");
