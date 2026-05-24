@@ -38,11 +38,19 @@ export async function getSession(): Promise<SessionPayload | null> {
   return verifySession(token);
 }
 
+function isAppServedOverHttps(): boolean {
+  const appUrl = process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL;
+  if (appUrl) return appUrl.startsWith("https://");
+  // No explicit URL configured — fall back to NODE_ENV so deployed
+  // production (where HTTPS is the norm) still gets a secure cookie.
+  return process.env.NODE_ENV === "production";
+}
+
 export function getSessionCookieOptions() {
   return {
     name: COOKIE_NAME,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: isAppServedOverHttps(),
     sameSite: "lax" as const,
     path: "/",
     maxAge: 60 * 60 * 24 * 7, // 7 days
