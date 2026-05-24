@@ -5,6 +5,7 @@ import { getSession } from "@/lib/session";
 import { FlagsSection } from "@/components/FlagsSection";
 import { ApiKeysSection } from "@/components/ApiKeysSection";
 import { ActivityFeed } from "@/components/ActivityFeed";
+import { ProjectSettings } from "@/components/ProjectSettings";
 
 const ENV_BADGE: Record<string, string> = {
   development: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
@@ -181,6 +182,13 @@ export default async function ProjectDetailPage({
           }))}
         />
       </SectionCard>
+
+      {/* Danger zone */}
+      <ProjectSettings
+        projectId={project.id}
+        projectName={project.name}
+        projectKey={project.key}
+      />
     </div>
   );
 }

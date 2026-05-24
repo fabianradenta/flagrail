@@ -2,11 +2,13 @@ import { db } from "@/lib/db";
 
 type AuditAction =
   | "project.created"
+  | "project.deleted"
   | "environment.created"
   | "flag.created"
   | "flag.updated"
   | "flag.toggled"
   | "flag.rollout_changed"
+  | "flag.deleted"
   | "rule.created"
   | "rule.deleted"
   | "api_key.created"

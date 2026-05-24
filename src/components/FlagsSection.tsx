@@ -418,9 +418,36 @@ export function FlagsSection({ projectId, environments }: Props) {
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [confirmingDelete, setConfirmingDelete] = useState<Record<string, boolean>>({});
+  const [deleting, setDeleting] = useState<Record<string, boolean>>({});
 
   const activeEnv = environments.find((e) => e.id === activeEnvId);
   const totalFlags = environments[0]?.flagEnvironments.length ?? 0;
+
+  async function deleteFlag(flagId: string, flagEnvId: string) {
+    setDeleting((s) => ({ ...s, [flagId]: true }));
+    setErrors((e) => ({ ...e, [flagEnvId]: "" }));
+    try {
+      const res = await fetch(`/api/projects/${projectId}/flags/${flagId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setErrors((e) => ({ ...e, [flagEnvId]: data.error ?? "Delete failed" }));
+        return;
+      }
+      setConfirmingDelete((s) => {
+        const next = { ...s };
+        delete next[flagId];
+        return next;
+      });
+      router.refresh();
+    } catch {
+      setErrors((e) => ({ ...e, [flagEnvId]: "Network error" }));
+    } finally {
+      setDeleting((s) => ({ ...s, [flagId]: false }));
+    }
+  }
 
   async function patchFlagEnv(
     flagEnvId: string,
@@ -519,6 +546,8 @@ export function FlagsSection({ projectId, environments }: Props) {
             const isOpen = expanded[row.id] ?? false;
             const hasRules = row.rules.length > 0;
             const rolloutTarget = hasRules ? "matched users" : "all users";
+            const isConfirmingDelete = confirmingDelete[row.flag.id] ?? false;
+            const isDeleting = deleting[row.flag.id] ?? false;
 
             return (
               <li
@@ -579,8 +608,48 @@ export function FlagsSection({ projectId, environments }: Props) {
                     >
                       Configure {isOpen ? "▲" : "▼"}
                     </button>
+                    <button
+                      onClick={() =>
+                        setConfirmingDelete((s) => ({
+                          ...s,
+                          [row.flag.id]: !s[row.flag.id],
+                        }))
+                      }
+                      disabled={isDeleting}
+                      className="text-xs font-medium text-slate-400 hover:text-red-600 transition-colors px-1.5 py-0.5 disabled:opacity-50"
+                      title="Delete flag"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
+
+                {isConfirmingDelete && (
+                  <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800 flex items-center justify-between gap-2 flex-wrap">
+                    <span>
+                      Delete <span className="font-mono font-semibold">{row.flag.key}</span> and
+                      its configuration in all environments? This cannot be undone.
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() =>
+                          setConfirmingDelete((s) => ({ ...s, [row.flag.id]: false }))
+                        }
+                        disabled={isDeleting}
+                        className="text-red-700 hover:text-red-900 font-medium"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => deleteFlag(row.flag.id, row.id)}
+                        disabled={isDeleting}
+                        className="rounded bg-red-600 text-white px-2 py-0.5 font-medium hover:bg-red-500 disabled:opacity-50"
+                      >
+                        {isDeleting ? "Deleting…" : "Delete flag"}
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {rowError && (
                   <p className="mt-2 text-xs text-red-600">{rowError}</p>

@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { FLAG_KEY_REGEX } from "@/lib/constants";
+import { createAuditLog } from "@/lib/audit";
 
 // ─── Create ──────────────────────────────────────────────────────────────────
 
@@ -141,5 +142,36 @@ export async function updateFlagEnvironment(params: UpdateFlagEnvironmentParams)
         },
       },
     });
+  });
+}
+
+// ─── Delete ───────────────────────────────────────────────────────────────────
+
+interface DeleteFlagParams {
+  flagId: string;
+  projectId: string;
+  userId: string;
+}
+
+export async function deleteFlag(params: DeleteFlagParams): Promise<void> {
+  const { flagId, projectId, userId } = params;
+
+  const flag = await db.featureFlag.findFirst({
+    where: { id: flagId, projectId },
+    select: { id: true, name: true, key: true },
+  });
+  if (!flag) throw new Error("Flag not found");
+
+  // FlagEnvironment and TargetingRule rows cascade via the Prisma schema
+  // (onDelete: Cascade), so a single delete tears the whole subtree down.
+  await db.featureFlag.delete({ where: { id: flag.id } });
+
+  await createAuditLog({
+    action: "flag.deleted",
+    entityType: "flag",
+    entityId: flag.id,
+    projectId,
+    userId,
+    payload: { name: flag.name, key: flag.key },
   });
 }
