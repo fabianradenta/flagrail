@@ -50,14 +50,21 @@ The control panel on the right lets you switch environment, swap user, and hit *
 
 ## Screenshots
 
-> Drop captures into `docs/` and uncomment the lines below.
+**Dashboard — project list**
 
-<!--
-![Demo Shop — Beta Tester (new checkout enabled)](docs/screenshot-demo-shop-enabled.png)
-![Demo Shop — Regular User (old checkout)](docs/screenshot-demo-shop-disabled.png)
-![Dashboard — project list](docs/screenshot-dashboard.png)
-![Project detail — flags, rules, rollout](docs/screenshot-project-detail.png)
--->
+![Dashboard — project list](docs/screenshots/dashboard.png)
+
+**Project detail — flags, targeting rules, and rollout**
+
+![Project detail — flags, rules, rollout](docs/screenshots/project-detail.png)
+
+**Demo Shop — flag enabled (new checkout for a targeted user, Production)**
+
+![Demo Shop — new checkout enabled](docs/screenshots/demo-shop-disable.png)
+
+**Demo Shop — flag disabled (old checkout, Development)**
+
+![Demo Shop — old checkout](docs/screenshots/demo-shop-enable.png)
 
 ---
 
@@ -87,7 +94,7 @@ The control panel on the right lets you switch environment, swap user, and hit *
 
 ```bash
 # 1. Clone and install
-git clone <repo-url>
+git clone https://github.com/fabianradenta/flagrail.git
 cd flagrail
 npm install
 
